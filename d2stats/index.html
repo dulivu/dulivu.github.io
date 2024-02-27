@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>D2 Stats Calc</title>
+
+    <style>
+      * { font-family: consolas; }
+      .hidden { display: none; }
+      table { border-collapse: collapse; }
+      table th, table td { text-align: left; }
+      .number { text-align: right; }
+      input.small { width: 3em; }
+      tr.row_strength { color: purple; }
+      tr.row_dexterity { color: green; }
+      tr.row_vitality { color: red; }
+      tr.row_energy { color: blue; }
+    </style>
+  </head>
+
+  <body>
+    <h3>D2 Stats Calc</h3><hr/>
+
+    <div>
+      <p>
+        <b>PJ (nivel): </b>
+        <select id="pj_type">
+          <option value="amazon">Amazona</option>
+          <option value="assassin">Asesina</option>
+          <option value="barbarian">Bárbaro</option>
+          <option value="druid">Druida</option>
+          <option value="sorceress">Hechicera</option>
+          <option value="paladin">Paladin</option>
+          <option value="necromancer">Nigromante</option>
+        </select>
+        <input id="pj_level" type="number" class="small" value="15"/>
+      </p>
+
+      <p><b>Puntos a distribuir: </b><input id="pj_points" type="number" class="small"/></p>
+      <p><b>Puntos adicionales: </b><input id="pj_points_add" type="number" class="small" value="0"/></p>
+      <p><b>Factor de desprecio (<span id="pj_ignore_calc">0</span>): </b><input id="pj_ignore" type="number" class="small" value="0"/></p>
+    </div>
+
+    <table id="stats" border="1">
+      <tr>
+        <th>Atributos</th>
+        <th>Base</th>
+        <th>Factor</th>
+        <th class="hidden">Calculado</th>
+        <th>Aplicar</th>
+      </tr>
+
+      <tr class="row_strength">
+        <th><input type="checkbox" id="use_str"/><span>Fuerza</span></th>
+        <td id="base_str" class="number"></td>
+        <td id="factor_str" class="number"></td>
+        <td id="total_str" class="number hidden"></td>
+        <td id="to_str" class="number"></td>
+      </tr>
+
+      <tr class="row_dexterity">
+        <th><input type="checkbox" id="use_des"/><span>Destreza</span></th>
+        <td id="base_des" class="number"></td>
+        <td id="factor_des" class="number"></td>
+        <td id="total_des" class="number hidden"></td>
+        <td id="to_des" class="number"></td>
+      </tr>
+
+      <tr class="row_vitality">
+        <th><input type="checkbox" id="use_vit"/><span>Vitalidad</span></th>
+        <td id="base_vit" class="number"></td>
+        <td id="factor_vit" class="number"></td>
+        <td id="total_vit" class="number hidden"></td>
+        <td id="to_vit" class="number"></td>
+      </tr>
+
+      <tr class="row_energy">
+        <th><input type="checkbox" id="use_ene"/><span>Energia</span></th>
+        <td id="base_ene" class="number"></td>
+        <td id="factor_ene" class="number"></td>
+        <td id="total_ene" class="number hidden"></td>
+        <td id="to_ene" class="number"></td>
+      </tr>
+    </table>
+
+    <div>
+      <p>
+        <b>Puntos acumulados: </b><input id="ac_points" type="number" readonly="1" class="small"/>
+      </p>
+      <p>
+        <b>Puntos distribuidos: </b><input id="ds_points" type="number" readonly="1" class="small"/>
+      </p>
+    </div>
+
+
+
+    <script type="text/javascript">
+      var $ = function (el) { return document.getElementById(el) };
+
+      var stats_base = {
+        // fuerza,destrza,vitalidad,energia,  vida,mana,  vida/pt,mana/pt,  vida/nvl,mana/nvl
+        'amazon':       [20,25,20,15,         50,15,      3,1.5,            2,1],
+        'assassin':     [20,20,20,25,         50,25,      3,1.5,            2,1],
+        'barbarian':    [30,20,25,10,         55,10,      4,1,              2,1],
+        'druid':        [15,20,25,20,         55,20,      2,2,              1.5,2],
+        'sorceress':    [10,25,10,35,         40,35,      2,2,              1,2],
+        'paladin':      [25,20,25,15,         55,15,      3,1.5,            2,1.5],
+        'necromancer':  [15,25,15,25,         45,25,      2,2,              1,2]
+      }
+
+      var calculate = function (pj, _points) {
+        var base = stats_base[pj];
+        var level = $('pj_level').value;
+        var points = _points || (level - 1) * 5;
+        var ignore = parseInt($('pj_ignore').value);
+
+        if (!_points)
+          $('pj_points').value = points;
+        $('base_str').innerHTML = base[0];
+        $('base_des').innerHTML = base[1];
+        $('base_vit').innerHTML = base[2];
+        $('base_ene').innerHTML = base[3];
+
+        var keys = [$('use_str').checked, $('use_des').checked, $('use_vit').checked, $('use_ene').checked];
+
+        // calcular divisor
+        // ----------------------------------------
+        var count = 0;
+        var divisor = 0;
+        var multiplicador = 0;
+        var atLeastOne = keys.some(function (i){ return i; });
+
+        if (atLeastOne) {
+          _base = keys.forEach(function (key, i) {
+            if (!key)
+              divisor += base[i];
+            else {
+              multiplicador += base[i];
+              count++;
+            }
+          });
+
+          // al tener más de 3 stats principales, 
+          // se trata de descartar complemante el restante
+          // sin dejarlo en 0
+          $('pj_ignore_calc').innerHTML = count;
+          count = count * (ignore + count);
+        }
+        // ----------------------------------------
+
+        var factores = [
+          keys[0] | !atLeastOne ? base[0] : multiplicador * (base[0] / divisor / count),
+          keys[1] | !atLeastOne ? base[1] : multiplicador * (base[1] / divisor / count),
+          keys[2] | !atLeastOne ? base[2] : multiplicador * (base[2] / divisor / count),
+          keys[3] | !atLeastOne ? base[3] : multiplicador * (base[3] / divisor / count)
+        ];
+
+        $('factor_str').innerHTML = factores[0];
+        $('factor_des').innerHTML = factores[1];
+        $('factor_vit').innerHTML = factores[2];
+        $('factor_ene').innerHTML = factores[3];
+
+        var total = factores.reduce(function (a, b) { return a+b; });
+        var totales = [
+          base[0] + (points * (factores[0] / total)),
+          base[1] + (points * (factores[1] / total)),
+          base[2] + (points * (factores[2] / total)),
+          base[3] + (points * (factores[3] / total))
+        ];
+
+        $('total_str').innerHTML = totales[0];
+        $('total_des').innerHTML = totales[1];
+        $('total_vit').innerHTML = totales[2];
+        $('total_ene').innerHTML = totales[3];
+
+        $('to_str').innerHTML = Math.floor(totales[0]);
+        $('to_des').innerHTML = Math.floor(totales[1]);
+        $('to_vit').innerHTML = Math.floor(totales[2]);
+        $('to_ene').innerHTML = Math.floor(totales[3]);
+
+        $('ac_points').value = base[0] + base[1] + base[2] + base[3] + points;
+        $('ds_points').value = Math.floor(totales[0]) + Math.floor(totales[1]) + Math.floor(totales[2]) + Math.floor(totales[3]);
+
+        console.log('-- finish calc --');
+      };
+
+      $('use_str').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('use_des').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('use_vit').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('use_ene').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('pj_points').addEventListener('change', function (e) { calculate($('pj_type').value, parseInt(this.value)+parseInt($('pj_points_add').value)); });
+      $('pj_points_add').addEventListener('change', function (e) { calculate($('pj_type').value, parseInt(this.value)+parseInt($('pj_points').value)); });
+      $('pj_ignore').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('pj_level').addEventListener('change', function (e) { calculate($('pj_type').value); });
+      $('pj_type').addEventListener('change', function (e) { calculate(this.value); });
+
+      $('pj_type').dispatchEvent(new Event('change'));
+    </script>
+  </body>
+</html>
