@@ -59,7 +59,7 @@
         <td id="factor_str" class="number"></td>
         <td id="total_str" class="number hidden"></td>
         <td id="to_str" class="number"></td>
-        <td><input id="fixed_str" type="number"/></td>
+        <td><input id="fixed_str" type="number" class="small"/></td>
       </tr>
 
       <tr class="row_dexterity">
@@ -68,7 +68,7 @@
         <td id="factor_des" class="number"></td>
         <td id="total_des" class="number hidden"></td>
         <td id="to_des" class="number"></td>
-        <td><input id="fixed_des" type="number"/></td>
+        <td><input id="fixed_des" type="number" class="small"/></td>
       </tr>
 
       <tr class="row_vitality">
@@ -77,7 +77,7 @@
         <td id="factor_vit" class="number"></td>
         <td id="total_vit" class="number hidden"></td>
         <td id="to_vit" class="number"></td>
-        <td><input id="fixed_vit" type="number"/></td>
+        <td><input id="fixed_vit" type="number" class="small"/></td>
       </tr>
 
       <tr class="row_energy">
@@ -86,7 +86,7 @@
         <td id="factor_ene" class="number"></td>
         <td id="total_ene" class="number hidden"></td>
         <td id="to_ene" class="number"></td>
-        <td><input id="fixed_ene" type="number"/></td>
+        <td><input id="fixed_ene" type="number" class="small"/></td>
       </tr>
     </table>
 
@@ -155,8 +155,11 @@
         }
         // ----------------------------------------
 
-        var fixes = [
-          
+        var fijados = [
+          parseInt($('fixed_str').value),
+          parseInt($('fixed_des').value),
+          parseInt($('fixed_vit').value),
+          parseInt($('fixed_ene').value),
         ];
 
         var factores = [
@@ -165,6 +168,9 @@
           keys[2] | !atLeastOne ? base[2] : multiplicador * (base[2] / divisor / count),
           keys[3] | !atLeastOne ? base[3] : multiplicador * (base[3] / divisor / count)
         ];
+
+        console.log('factores');
+        console.log(factores);
 
         $('factor_str').innerHTML = factores[0];
         $('factor_des').innerHTML = factores[1];
@@ -178,16 +184,27 @@
           base[2] + (points * (factores[2] / total)),
           base[3] + (points * (factores[3] / total))
         ];
+        console.log('totales')
+        console.log(totales)
+        var resto = fijados.recude(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a });
+        console.log('resto');
+        console.log(resto);
 
-        $('total_str').innerHTML = totales[0];
-        $('total_des').innerHTML = totales[1];
-        $('total_vit').innerHTML = totales[2];
-        $('total_ene').innerHTML = totales[3];
+        if (fijados[0]) totales[0] += (resto * (factores[0] / resto));
+        if (fijados[1]) totales[1] += (resto * (factores[1] / resto));
+        if (fijados[2]) totales[2] += (resto * (factores[2] / resto));
+        if (fijados[3]) totales[3] += (resto * (factores[3] / resto));
+        console.log(totales);
 
-        $('to_str').innerHTML = Math.floor(totales[0]);
-        $('to_des').innerHTML = Math.floor(totales[1]);
-        $('to_vit').innerHTML = Math.floor(totales[2]);
-        $('to_ene').innerHTML = Math.floor(totales[3]);
+        $('total_str').innerHTML = fijados[0] || totales[0];
+        $('total_des').innerHTML = fijados[1] || totales[1];
+        $('total_vit').innerHTML = fijados[2] || totales[2];
+        $('total_ene').innerHTML = fijados[3] || totales[3];
+
+        $('to_str').innerHTML = fijados[0] || Math.floor(totales[0]);
+        $('to_des').innerHTML = fijados[1] || Math.floor(totales[1]);
+        $('to_vit').innerHTML = fijados[2] || Math.floor(totales[2]);
+        $('to_ene').innerHTML = fijados[3] || Math.floor(totales[3]);
 
         $('ac_points').value = base[0] + base[1] + base[2] + base[3] + points;
         $('ds_points').value = Math.floor(totales[0]) + Math.floor(totales[1]) + Math.floor(totales[2]) + Math.floor(totales[3]);
