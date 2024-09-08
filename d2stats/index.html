@@ -186,7 +186,7 @@
         ];
         console.log('totales')
         console.log(totales)
-        var resto = fijados.recude(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a });
+        var resto = fijados.reduce(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a });
         console.log('resto');
         console.log(resto);
 
