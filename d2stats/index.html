@@ -181,17 +181,13 @@
           base[2] + (points * (factores[2] / total)),
           base[3] + (points * (factores[3] / total))
         ];
-        console.log('totales');
-        console.log(totales);
+
         var resto = fijados.reduce(function (a, b, i) { return b ? a+(totales[i]-b) : a }, 0);
-        console.log('resto');
-        console.log(resto);
 
         if (fijados.some((a) => a) && !fijados[0]) totales[0] += (resto * (factores[0] / total));
         if (fijados.some((a) => a) && !fijados[1]) totales[1] += (resto * (factores[1] / total));
         if (fijados.some((a) => a) && !fijados[2]) totales[2] += (resto * (factores[2] / total));
         if (fijados.some((a) => a) && !fijados[3]) totales[3] += (resto * (factores[3] / total));
-        console.log(totales);
 
         $('total_str').innerHTML = fijados[0] || totales[0];
         $('total_des').innerHTML = fijados[1] || totales[1];
@@ -204,7 +200,11 @@
         $('to_ene').innerHTML = fijados[3] || Math.floor(totales[3]);
 
         $('ac_points').value = base[0] + base[1] + base[2] + base[3] + points;
-        $('ds_points').value = Math.floor(totales[0]) + Math.floor(totales[1]) + Math.floor(totales[2]) + Math.floor(totales[3]);
+        $('ds_points').value = 
+          Math.floor(fijados[0] || totales[0]) + 
+          Math.floor(fijados[1] || totales[1]) + 
+          Math.floor(fijados[2] || totales[2]) + 
+          Math.floor(fijados[3] || totales[3]);
 
         console.log('-- finish calc --');
       };
