@@ -50,6 +50,7 @@
         <th>Factor</th>
         <th class="hidden">Calculado</th>
         <th>Aplicar</th>
+        <th>Fijar</th>
       </tr>
 
       <tr class="row_strength">
@@ -58,6 +59,7 @@
         <td id="factor_str" class="number"></td>
         <td id="total_str" class="number hidden"></td>
         <td id="to_str" class="number"></td>
+        <td><input id="fixed_str" type="number"/></td>
       </tr>
 
       <tr class="row_dexterity">
@@ -66,6 +68,7 @@
         <td id="factor_des" class="number"></td>
         <td id="total_des" class="number hidden"></td>
         <td id="to_des" class="number"></td>
+        <td><input id="fixed_des" type="number"/></td>
       </tr>
 
       <tr class="row_vitality">
@@ -74,6 +77,7 @@
         <td id="factor_vit" class="number"></td>
         <td id="total_vit" class="number hidden"></td>
         <td id="to_vit" class="number"></td>
+        <td><input id="fixed_vit" type="number"/></td>
       </tr>
 
       <tr class="row_energy">
@@ -82,6 +86,7 @@
         <td id="factor_ene" class="number"></td>
         <td id="total_ene" class="number hidden"></td>
         <td id="to_ene" class="number"></td>
+        <td><input id="fixed_ene" type="number"/></td>
       </tr>
     </table>
 
@@ -149,6 +154,10 @@
           count = count * (ignore + count);
         }
         // ----------------------------------------
+
+        var fixes = [
+          
+        ];
 
         var factores = [
           keys[0] | !atLeastOne ? base[0] : multiplicador * (base[0] / divisor / count),
