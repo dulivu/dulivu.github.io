@@ -181,10 +181,9 @@
           base[2] + (points * (factores[2] / total)),
           base[3] + (points * (factores[3] / total))
         ];
-        console.log(fijados);
         console.log('totales');
         console.log(totales);
-        var resto = fijados.reduce(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a }, 0);
+        var resto = fijados.reduce(function (a, b, i) { return b ? a+(totales[i]-b) : a }, 0);
         console.log('resto');
         console.log(resto);
 
