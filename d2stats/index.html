@@ -187,10 +187,10 @@
         console.log('resto');
         console.log(resto);
 
-        if (fijados.some((a) => a) && !fijados[0]) totales[0] += (resto * (factores[0] / resto));
-        if (fijados.some((a) => a) && !fijados[1]) totales[1] += (resto * (factores[1] / resto));
-        if (fijados.some((a) => a) && !fijados[2]) totales[2] += (resto * (factores[2] / resto));
-        if (fijados.some((a) => a) && !fijados[3]) totales[3] += (resto * (factores[3] / resto));
+        if (fijados.some((a) => a) && !fijados[0]) totales[0] += (resto * (factores[0] / total));
+        if (fijados.some((a) => a) && !fijados[1]) totales[1] += (resto * (factores[1] / total));
+        if (fijados.some((a) => a) && !fijados[2]) totales[2] += (resto * (factores[2] / total));
+        if (fijados.some((a) => a) && !fijados[3]) totales[3] += (resto * (factores[3] / total));
         console.log(totales);
 
         $('total_str').innerHTML = fijados[0] || totales[0];
