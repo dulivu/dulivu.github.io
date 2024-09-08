@@ -169,9 +169,6 @@
           keys[3] | !atLeastOne ? base[3] : multiplicador * (base[3] / divisor / count)
         ];
 
-        console.log('factores');
-        console.log(factores);
-
         $('factor_str').innerHTML = factores[0];
         $('factor_des').innerHTML = factores[1];
         $('factor_vit').innerHTML = factores[2];
@@ -184,9 +181,10 @@
           base[2] + (points * (factores[2] / total)),
           base[3] + (points * (factores[3] / total))
         ];
-        console.log('totales')
-        console.log(totales)
-        var resto = fijados.reduce(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a });
+        console.log(fijados);
+        console.log('totales');
+        console.log(totales);
+        var resto = fijados.reduce(function (a, b, i) { return console.log(i); b ? a+(totales[i]-b) : a }, 0);
         console.log('resto');
         console.log(resto);
 
